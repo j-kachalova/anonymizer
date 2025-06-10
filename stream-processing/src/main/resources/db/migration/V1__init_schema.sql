@@ -8,11 +8,14 @@ CREATE TABLE rulesets (
 );
 
 -- Таблица соответствий идентификаторов
-CREATE TABLE identifier_mapping (
-                                    id SERIAL PRIMARY KEY,
-                                    original_value TEXT UNIQUE NOT NULL,
-                                    identifier TEXT NOT NULL
-);
+CREATE TABLE IF NOT EXISTS identifier_mapping (
+                                                  id SERIAL PRIMARY KEY,
+                                                  field_name VARCHAR(255) NOT NULL,
+    original_value TEXT NOT NULL,
+    identifier TEXT NOT NULL,
+    UNIQUE (field_name, original_value)
+    );
+
 
 -- Таблица результатов обезличивания (по желанию — можно хранить результаты)
 CREATE TABLE anonymization_results (
