@@ -1,0 +1,23 @@
+server:
+  port: 8080
+
+spring:
+  r2dbc:
+    url: ${SPRING_R2DBC_URL}
+    username: ${SPRING_R2DBC_USERNAME}
+    password: ${SPRING_R2DBC_PASSWORD}
+
+  flyway:
+    enabled: true
+    url: ${SPRING_FLYWAY_URL}
+    user: ${SPRING_FLYWAY_USER}
+    password: ${SPRING_FLYWAY_PASSWORD}
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+
+
+
+logging:
+  level:
+    com.kachalova.streamprocessing: DEBUG
+    org.springframework.r2dbc: INFO
