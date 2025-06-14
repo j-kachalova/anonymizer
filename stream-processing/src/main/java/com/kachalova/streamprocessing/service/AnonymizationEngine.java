@@ -32,8 +32,12 @@ public class AnonymizationEngine {
             String paramsJson = rule.getParamsJson();
 
             try {
-                Map<String, Object> params = objectMapper.readValue(paramsJson, Map.class);
+                Map<String, Object> params = objectMapper.readValue(rule.getParamsJson(), Map.class);
                 params.put("field_name", fieldName);
+                if (inputData.containsKey("gender")) {
+                    params.put("gender", inputData.get("gender"));
+                }
+
 
                 AnonymizationStrategy strategy = strategyFactory.getStrategy(strategyName);
                 Object fieldValue = inputData.get(fieldName);

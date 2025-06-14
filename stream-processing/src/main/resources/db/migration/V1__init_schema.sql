@@ -67,6 +67,15 @@ CREATE TABLE original_data (
                                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE person_dictionary (
+                                   id SERIAL PRIMARY KEY,
+                                   last_name VARCHAR(100) NOT NULL,
+                                   first_name VARCHAR(100) NOT NULL,
+                                   patronymic VARCHAR(100) NOT NULL,
+                                   gender CHAR(1) NOT NULL CHECK (gender IN ('М', 'Ж'))
+);
+
+
 -- Индексы (для ускорения поиска)
 CREATE INDEX idx_identifier_mapping_field ON identifier_mapping(field_name);
 CREATE INDEX idx_shuffle_history_field ON shuffle_history(field_name);
