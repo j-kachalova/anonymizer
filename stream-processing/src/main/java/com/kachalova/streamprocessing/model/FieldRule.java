@@ -22,6 +22,11 @@ public class FieldRule {
 
     @Column("params_json")
     private String paramsJson;
+    @Column("order_index")
+    private Integer orderIndex;
+
+    public Integer getOrderIndex() { return orderIndex; }
+    public void setOrderIndex(Integer orderIndex) { this.orderIndex = orderIndex; }
 
     // getters and setters
     public Long getId() { return id; }

@@ -1,4 +1,3 @@
-
 package com.kachalova.streamprocessing.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -7,12 +6,10 @@ import com.kachalova.streamprocessing.service.strategy.AnonymizationStrategy;
 import com.kachalova.streamprocessing.service.strategy.StrategyFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class AnonymizationEngine {
@@ -23,36 +20,53 @@ public class AnonymizationEngine {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     public Mono<Map<String, Object>> anonymize(Map<String, Object> inputData, List<FieldRule> fieldRules) {
+        // Группировка по полю с сохранением порядка
+        Map<String, List<FieldRule>> rulesByField = fieldRules.stream()
+                .collect(Collectors.groupingBy(
+                        FieldRule::getFieldName,
+                        LinkedHashMap::new,
+                        Collectors.toList()
+                ));
 
-        Map<String, Mono<String>> fieldMonos = new HashMap<>();
+        Map<String, Mono<String>> fieldMonos = new LinkedHashMap<>();
 
-        for (FieldRule rule : fieldRules) {
-            String fieldName = rule.getFieldName();
-            String strategyName = rule.getStrategy();
-            String paramsJson = rule.getParamsJson();
+        for (Map.Entry<String, List<FieldRule>> entry : rulesByField.entrySet()) {
+            String fieldName = entry.getKey();
+            Object originalValue = inputData.get(fieldName);
+            if (originalValue == null) continue;
 
-            try {
-                Map<String, Object> params = objectMapper.readValue(rule.getParamsJson(), Map.class);
-                params.put("field_name", fieldName);
-                if (inputData.containsKey("gender")) {
-                    params.put("gender", inputData.get("gender"));
-                }
+            Mono<String> resultMono = Mono.just(String.valueOf(originalValue));
 
+            for (FieldRule rule : entry.getValue().stream()
+                    .sorted(Comparator.comparingInt(r -> Optional.ofNullable(r.getOrderIndex()).orElse(0)))
+                    .toList()) {
 
-                AnonymizationStrategy strategy = strategyFactory.getStrategy(strategyName);
-                Object fieldValue = inputData.get(fieldName);
-
-                if (fieldValue != null) {
-                    Mono<String> anonymizedMono = strategy.anonymize(fieldValue, params);
-                    fieldMonos.put(fieldName, anonymizedMono);
-                }
-            } catch (Exception e) {
-                return Mono.error(new RuntimeException("Error processing field: " + fieldName, e));
+                resultMono = resultMono.flatMap(currentValue -> {
+                    try {
+                        String json = Optional.ofNullable(rule.getParamsJson()).orElse("{}");
+                        Map<String, Object> params = objectMapper.readValue(json, Map.class);
+                        params.put("field_name", fieldName);
+                        if (inputData.containsKey("gender")) {
+                            params.put("gender", inputData.get("gender"));
+                        }
+                        AnonymizationStrategy strategy = strategyFactory.getStrategy(rule.getStrategy());
+                        return strategy.anonymize(currentValue, params);
+                    } catch (Exception e) {
+                        return Mono.error(new RuntimeException("Error in strategy: " + rule.getStrategy(), e));
+                    }
+                });
             }
+
+            fieldMonos.put(fieldName, resultMono);
         }
 
-        return Flux.fromIterable(fieldMonos.entrySet())
-                .flatMap(entry -> entry.getValue().map(val -> Map.entry(entry.getKey(), val)))
-                .collectMap(Map.Entry::getKey, Map.Entry::getValue);
+        List<String> orderedKeys = new ArrayList<>(fieldMonos.keySet());
+        return Mono.zip(fieldMonos.values(), results -> {
+            Map<String, Object> finalResult = new LinkedHashMap<>();
+            for (int i = 0; i < orderedKeys.size(); i++) {
+                finalResult.put(orderedKeys.get(i), results[i]);
+            }
+            return finalResult;
+        });
     }
 }

@@ -1,5 +1,5 @@
 -- V1__initial_schema.sql
--- Initial schema for Data Anonymization Service
+-- Initial schema for Data Anonymization Service (with strategy order support)
 
 -- RuleSet table
 CREATE TABLE rule_set (
@@ -10,13 +10,14 @@ CREATE TABLE rule_set (
                           updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- FieldRule table
+-- FieldRule table (with order_index for sequential strategy application)
 CREATE TABLE field_rule (
                             id SERIAL PRIMARY KEY,
                             rule_set_id INTEGER REFERENCES rule_set(id) ON DELETE CASCADE,
                             field_name VARCHAR(255) NOT NULL,
                             strategy VARCHAR(100) NOT NULL,
-                            params_json TEXT
+                            params_json TEXT,
+                            order_index INTEGER DEFAULT 0
 );
 
 -- IdentifierMapping table (для восстановления по IdReplacementStrategy)
@@ -47,7 +48,7 @@ CREATE TABLE decomposition_mapping (
                                        rule_set_id INTEGER REFERENCES rule_set(id) ON DELETE CASCADE,
                                        decomposition_part_name VARCHAR(255) NOT NULL,
                                        part_value TEXT NOT NULL,
-                                       subject_key VARCHAR(255), -- можно использовать для склейки частей обратно
+                                       subject_key VARCHAR(255),
                                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -67,6 +68,7 @@ CREATE TABLE original_data (
                                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- PersonDictionary table (для DictionaryReplacementStrategy)
 CREATE TABLE person_dictionary (
                                    id SERIAL PRIMARY KEY,
                                    last_name VARCHAR(100) NOT NULL,
@@ -74,7 +76,6 @@ CREATE TABLE person_dictionary (
                                    patronymic VARCHAR(100) NOT NULL,
                                    gender CHAR(1) NOT NULL CHECK (gender IN ('М', 'Ж'))
 );
-
 
 -- Индексы (для ускорения поиска)
 CREATE INDEX idx_identifier_mapping_field ON identifier_mapping(field_name);
