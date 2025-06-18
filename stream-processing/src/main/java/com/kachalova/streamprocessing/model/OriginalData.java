@@ -1,12 +1,14 @@
 
 package com.kachalova.streamprocessing.model;
 
+import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;
 import org.springframework.data.relational.core.mapping.Column;
 
 import java.time.LocalDateTime;
 
+@Data
 @Table("original_data")
 public class OriginalData {
 
@@ -15,23 +17,15 @@ public class OriginalData {
 
     @Column("rule_set_id")
     private Long ruleSetId;
-
-    @Column("data_json")
-    private String dataJson;
-
+    @Column("last_name")
+    private String lastName;
+    @Column("first_name")
+    private String firstName;
+    private String patronymic;
+    private String gender;
+    @Column("phone_number")
+    private String phoneNumber;
+    private String email;
     @Column("created_at")
     private LocalDateTime createdAt = LocalDateTime.now();
-
-    // getters and setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-
-    public Long getRuleSetId() { return ruleSetId; }
-    public void setRuleSetId(Long ruleSetId) { this.ruleSetId = ruleSetId; }
-
-    public String getDataJson() { return dataJson; }
-    public void setDataJson(String dataJson) { this.dataJson = dataJson; }
-
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
 }

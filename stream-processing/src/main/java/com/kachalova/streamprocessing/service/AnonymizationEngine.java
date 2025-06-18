@@ -1,9 +1,12 @@
 package com.kachalova.streamprocessing.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kachalova.streamprocessing.model.FieldRule;
+import com.kachalova.streamprocessing.dto.AnonymizedDataDto;
+import com.kachalova.streamprocessing.dto.OriginalDataDto;
+import com.kachalova.streamprocessing.mapper.AnonymizedDataMapper;
 import com.kachalova.streamprocessing.service.strategy.AnonymizationStrategy;
 import com.kachalova.streamprocessing.service.strategy.StrategyFactory;
+import com.kachalova.streamprocessing.model.FieldRule;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
@@ -17,10 +20,14 @@ public class AnonymizationEngine {
     @Autowired
     private StrategyFactory strategyFactory;
 
+    @Autowired
+    private AnonymizedDataMapper anonymizedDataMapper;
+
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public Mono<Map<String, Object>> anonymize(Map<String, Object> inputData, List<FieldRule> fieldRules) {
-        // Группировка правил по имени поля
+    public Mono<AnonymizedDataDto> anonymize(OriginalDataDto inputDto, List<FieldRule> fieldRules, Long ruleSetId) {
+        Map<String, Object> inputData = toMap(inputDto);
+
         Map<String, List<FieldRule>> rulesByField = fieldRules.stream()
                 .collect(Collectors.groupingBy(
                         FieldRule::getFieldName,
@@ -69,15 +76,36 @@ public class AnonymizationEngine {
                 result.put(key, results[i++]);
             }
 
-            // Добавляем необработанные поля в результат
             inputData.forEach((key, value) -> {
                 if (!result.containsKey(key)) {
                     result.put(key, value);
                 }
             });
 
-            return result;
+            return fromMapToDto(result, ruleSetId);
         });
     }
 
+    private Map<String, Object> toMap(OriginalDataDto dto) {
+        Map<String, Object> map = new LinkedHashMap<>();
+        map.put("last_name", dto.getLastName());
+        map.put("first_name", dto.getFirstName());
+        map.put("patronymic", dto.getPatronymic());
+        map.put("gender", dto.getGender());
+        map.put("phone_number", dto.getPhoneNumber());
+        map.put("email", dto.getEmail());
+        return map;
+    }
+
+    private AnonymizedDataDto fromMapToDto(Map<String, Object> map, Long ruleSetId) {
+        return AnonymizedDataDto.builder()
+                .ruleSetId(ruleSetId)
+                .lastName((String) map.get("last_name"))
+                .firstName((String) map.get("first_name"))
+                .patronymic((String) map.get("patronymic"))
+                .gender((String) map.get("gender"))
+                .phoneNumber((String) map.get("phone_number"))
+                .email((String) map.get("email"))
+                .build();
+    }
 }
