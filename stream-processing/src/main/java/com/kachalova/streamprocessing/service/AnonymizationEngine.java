@@ -20,7 +20,7 @@ public class AnonymizationEngine {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     public Mono<Map<String, Object>> anonymize(Map<String, Object> inputData, List<FieldRule> fieldRules) {
-        // Группировка по полю с сохранением порядка
+        // Группировка правил по имени поля
         Map<String, List<FieldRule>> rulesByField = fieldRules.stream()
                 .collect(Collectors.groupingBy(
                         FieldRule::getFieldName,
@@ -60,13 +60,24 @@ public class AnonymizationEngine {
             fieldMonos.put(fieldName, resultMono);
         }
 
-        List<String> orderedKeys = new ArrayList<>(fieldMonos.keySet());
+        List<String> processedKeys = new ArrayList<>(fieldMonos.keySet());
+
         return Mono.zip(fieldMonos.values(), results -> {
-            Map<String, Object> finalResult = new LinkedHashMap<>();
-            for (int i = 0; i < orderedKeys.size(); i++) {
-                finalResult.put(orderedKeys.get(i), results[i]);
+            Map<String, Object> result = new LinkedHashMap<>();
+            int i = 0;
+            for (String key : processedKeys) {
+                result.put(key, results[i++]);
             }
-            return finalResult;
+
+            // Добавляем необработанные поля в результат
+            inputData.forEach((key, value) -> {
+                if (!result.containsKey(key)) {
+                    result.put(key, value);
+                }
+            });
+
+            return result;
         });
     }
+
 }
