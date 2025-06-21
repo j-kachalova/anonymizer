@@ -7,6 +7,7 @@ import com.kachalova.streamprocessing.model.FieldRule;
 import com.kachalova.streamprocessing.repository.RuleSetRepository;
 import com.kachalova.streamprocessing.repository.FieldRuleRepository;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
@@ -15,13 +16,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/rules")
 public class RuleSetController {
-
-    @Autowired
     private RuleSetRepository ruleSetRepository;
 
-    @Autowired
     private FieldRuleRepository fieldRuleRepository;
 
     @PostMapping
