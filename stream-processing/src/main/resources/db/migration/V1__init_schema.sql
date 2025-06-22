@@ -41,16 +41,7 @@ CREATE TABLE shuffle_history (
                                  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- DecompositionMapping table (для восстановления по DecompositionStrategy)
-CREATE TABLE decomposition_mapping (
-                                       id SERIAL PRIMARY KEY,
-                                       field_name VARCHAR(255) NOT NULL,
-                                       rule_set_id INTEGER REFERENCES rule_set(id) ON DELETE CASCADE,
-                                       decomposition_part_name VARCHAR(255) NOT NULL,
-                                       part_value TEXT NOT NULL,
-                                       subject_key VARCHAR(255),
-                                       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+
 
 -- AnonymizedData table (храним обезличенные данные)
 CREATE TABLE anonymized_data (
@@ -68,7 +59,6 @@ CREATE TABLE anonymized_data (
 -- OriginalData table (опционально храним исходные данные — для восстановления/аудита)
 CREATE TABLE original_data (
                                id SERIAL PRIMARY KEY,
-                               rule_set_id INTEGER REFERENCES rule_set(id) ON DELETE CASCADE,
                                last_name VARCHAR(255),
                                first_name VARCHAR(255),
                                patronymic VARCHAR(255),
@@ -78,7 +68,6 @@ CREATE TABLE original_data (
                                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-
 -- PersonDictionary table (для DictionaryReplacementStrategy)
 CREATE TABLE person_dictionary (
                                    id SERIAL PRIMARY KEY,
@@ -86,6 +75,28 @@ CREATE TABLE person_dictionary (
                                    first_name VARCHAR(100) NOT NULL,
                                    patronymic VARCHAR(100) NOT NULL,
                                    gender CHAR(1) NOT NULL CHECK (gender IN ('М', 'Ж'))
+);
+
+-- ✅ Исправленные таблицы декомпозиции:
+
+CREATE TABLE decomposition_identity (
+                                        id BIGSERIAL PRIMARY KEY,
+                                        first_name TEXT,
+                                        last_name TEXT,
+                                        patronymic TEXT,
+                                        gender TEXT
+);
+
+CREATE TABLE decomposition_contact (
+                                       id BIGSERIAL PRIMARY KEY,
+                                       phone_number TEXT,
+                                       email TEXT
+);
+
+CREATE TABLE decomposition_meta (
+                                    id BIGSERIAL PRIMARY KEY,
+                                    rule_set_id BIGINT,
+                                    created_at TIMESTAMP
 );
 
 -- Индексы (для ускорения поиска)

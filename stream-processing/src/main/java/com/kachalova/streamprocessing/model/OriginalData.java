@@ -14,9 +14,6 @@ public class OriginalData {
 
     @Id
     private Long id;
-
-    @Column("rule_set_id")
-    private Long ruleSetId;
     @Column("last_name")
     private String lastName;
     @Column("first_name")

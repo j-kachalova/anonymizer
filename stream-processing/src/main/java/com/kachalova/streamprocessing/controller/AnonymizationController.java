@@ -23,13 +23,13 @@ import java.util.List;
 @RequestMapping("/anonymize")
 public class AnonymizationController {
 
-    private RuleSetRepository ruleSetRepository;
+    private final RuleSetRepository ruleSetRepository;
 
-    private FieldRuleRepository fieldRuleRepository;
+    private final FieldRuleRepository fieldRuleRepository;
 
-    private AnonymizationEngine anonymizationEngine;
+    private final AnonymizationEngine anonymizationEngine;
 
-    private DataStorageService dataStorageService;
+    private final DataStorageService dataStorageService;
 
     @PostMapping
     public Mono<AnonymizedDataDto> anonymize(
@@ -41,14 +41,16 @@ public class AnonymizationController {
         Mono<RuleSet> ruleSetMono = ruleSetRepository.findById(ruleSetId);
         Flux<FieldRule> fieldRulesFlux = fieldRuleRepository.findByRuleSetId(ruleSetId);
 
-        return ruleSetMono.zipWith(fieldRulesFlux.collectList())
+        return dataStorageService.saveOriginal(originalDto) // сохраняем сначала оригинальные данные
+                .then(ruleSetMono.zipWith(fieldRulesFlux.collectList()))
                 .flatMap(tuple -> {
                     List<FieldRule> fieldRules = tuple.getT2();
                     return anonymizationEngine.anonymize(originalDto, fieldRules, ruleSetId)
                             .flatMap(anonymizedDto ->
-                                    dataStorageService.saveAll(originalDto, anonymizedDto)
+                                    dataStorageService.saveAnonymized(anonymizedDto)
                                             .thenReturn(anonymizedDto)
                             );
                 });
     }
+
 }

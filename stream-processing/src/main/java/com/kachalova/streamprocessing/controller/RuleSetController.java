@@ -16,11 +16,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequiredArgsConstructor
 @RequestMapping("/rules")
 public class RuleSetController {
+    @Autowired
     private RuleSetRepository ruleSetRepository;
-
+    @Autowired
     private FieldRuleRepository fieldRuleRepository;
 
     @PostMapping

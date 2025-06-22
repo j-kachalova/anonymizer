@@ -1,23 +1,23 @@
-package com.kachalova.streamprocessing.dto;
+package com.kachalova.streamprocessing.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Table;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class OriginalDataDto {
+@Table("decomposition_identity")
+public class DecomposedIdentity {
+    @Id
     private Long id;
     private String lastName;
     private String firstName;
     private String patronymic;
     private String gender;
-    private String phoneNumber;
-    private String email;
-    private LocalDateTime createdAt;
 }
+

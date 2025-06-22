@@ -4,9 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kachalova.streamprocessing.dto.AnonymizedDataDto;
 import com.kachalova.streamprocessing.dto.OriginalDataDto;
 import com.kachalova.streamprocessing.mapper.AnonymizedDataMapper;
+import com.kachalova.streamprocessing.model.FieldRule;
 import com.kachalova.streamprocessing.service.strategy.AnonymizationStrategy;
 import com.kachalova.streamprocessing.service.strategy.StrategyFactory;
-import com.kachalova.streamprocessing.model.FieldRule;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
@@ -28,7 +28,30 @@ public class AnonymizationEngine {
     public Mono<AnonymizedDataDto> anonymize(OriginalDataDto inputDto, List<FieldRule> fieldRules, Long ruleSetId) {
         Map<String, Object> inputData = toMap(inputDto);
 
+        // 1. Вызываем DecompositionStrategy один раз, если есть специальная запись "__full__"
+        Optional<FieldRule> decompositionRule = fieldRules.stream()
+                .filter(rule -> "__full__".equals(rule.getFieldName()) &&
+                        "decomposition".equals(rule.getStrategy()))
+                .findFirst();
+
+        Mono<String> decompositionMono = decompositionRule
+                .map(rule -> {
+                    try {
+                        String json = Optional.ofNullable(rule.getParamsJson()).orElse("{}");
+                        Map<String, Object> params = objectMapper.readValue(json, Map.class);
+                        params.put("rule_set_id", ruleSetId);
+                        AnonymizationStrategy strategy = strategyFactory.getStrategy("decomposition");
+                        return strategy.anonymize(inputDto, params);
+                    } catch (Exception e) {
+                        return Mono.<String>error(new RuntimeException("Error in decomposition strategy", e));
+                    }
+                })
+                .orElseGet(() -> Mono.<String>empty());
+
+
+        // 2. Группируем остальные правила по полям (кроме "__full__")
         Map<String, List<FieldRule>> rulesByField = fieldRules.stream()
+                .filter(rule -> !"__full__".equals(rule.getFieldName()))
                 .collect(Collectors.groupingBy(
                         FieldRule::getFieldName,
                         LinkedHashMap::new,
@@ -57,7 +80,8 @@ public class AnonymizationEngine {
                             params.put("gender", inputData.get("gender"));
                         }
                         AnonymizationStrategy strategy = strategyFactory.getStrategy(rule.getStrategy());
-                        return strategy.anonymize(currentValue, params);
+                        Object strategyInput = strategy.requiresFullDto() ? inputDto : currentValue;
+                        return strategy.anonymize(strategyInput, params);
                     } catch (Exception e) {
                         return Mono.error(new RuntimeException("Error in strategy: " + rule.getStrategy(), e));
                     }
@@ -69,21 +93,24 @@ public class AnonymizationEngine {
 
         List<String> processedKeys = new ArrayList<>(fieldMonos.keySet());
 
-        return Mono.zip(fieldMonos.values(), results -> {
-            Map<String, Object> result = new LinkedHashMap<>();
-            int i = 0;
-            for (String key : processedKeys) {
-                result.put(key, results[i++]);
-            }
+        // 3. Сначала вызываем декомпозицию (если есть), потом обработку остальных полей
+        return decompositionMono.then(
+                Mono.zip(fieldMonos.values(), results -> {
+                    Map<String, Object> result = new LinkedHashMap<>();
+                    int i = 0;
+                    for (String key : processedKeys) {
+                        result.put(key, results[i++]);
+                    }
 
-            inputData.forEach((key, value) -> {
-                if (!result.containsKey(key)) {
-                    result.put(key, value);
-                }
-            });
+                    inputData.forEach((key, value) -> {
+                        if (!result.containsKey(key)) {
+                            result.put(key, value);
+                        }
+                    });
 
-            return fromMapToDto(result, ruleSetId);
-        });
+                    return fromMapToDto(result, ruleSetId);
+                })
+        );
     }
 
     private Map<String, Object> toMap(OriginalDataDto dto) {

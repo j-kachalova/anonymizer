@@ -1,9 +1,11 @@
-package com.kachalova.streamprocessing.dto;
+package com.kachalova.streamprocessing.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Table;
 
 import java.time.LocalDateTime;
 
@@ -11,13 +13,11 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class OriginalDataDto {
+@Table("decomposition_meta")
+public class DecomposedMeta {
+    @Id
     private Long id;
-    private String lastName;
-    private String firstName;
-    private String patronymic;
-    private String gender;
-    private String phoneNumber;
-    private String email;
+    private Long ruleSetId;
     private LocalDateTime createdAt;
 }
+

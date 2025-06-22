@@ -31,9 +31,21 @@ public class DataStorageService {
         this.anonymizedDataMapper = anonymizedDataMapper;
     }
 
+    public Mono<Void> saveOriginal(OriginalDataDto originalDto) {
+        return originalDataRepository
+                .save(originalDataMapper.toEntity(originalDto))
+                .then();
+    }
+
+    public Mono<Void> saveAnonymized(AnonymizedDataDto anonymizedDto) {
+        return anonymizedDataRepository
+                .save(anonymizedDataMapper.toEntity(anonymizedDto))
+                .then();
+    }
+
     public Mono<AnonymizedDataDto> saveAll(OriginalDataDto originalDto, AnonymizedDataDto anonymizedDto) {
-        return originalDataRepository.save(originalDataMapper.toEntity(originalDto))
-                .then(anonymizedDataRepository.save(anonymizedDataMapper.toEntity(anonymizedDto)))
+        return saveOriginal(originalDto)
+                .then(saveAnonymized(anonymizedDto))
                 .thenReturn(anonymizedDto);
     }
 }
