@@ -1,13 +1,12 @@
 package com.kachalova.streamprocessing.service.strategy;
 
-import com.kachalova.streamprocessing.model.PersonDictionary;
+import com.kachalova.streamprocessing.entity.PersonDictionary;
 import com.kachalova.streamprocessing.repository.PersonDictionaryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
 import java.security.SecureRandom;
-import java.util.List;
 import java.util.Map;
 import java.util.Random;
 

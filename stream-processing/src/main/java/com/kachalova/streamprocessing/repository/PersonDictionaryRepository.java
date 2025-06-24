@@ -1,6 +1,6 @@
 package com.kachalova.streamprocessing.repository;
 
-import com.kachalova.streamprocessing.model.PersonDictionary;
+import com.kachalova.streamprocessing.entity.PersonDictionary;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import reactor.core.publisher.Flux;
 

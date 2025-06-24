@@ -2,15 +2,14 @@ package com.kachalova.streamprocessing.controller;
 
 import com.kachalova.streamprocessing.dto.AnonymizedDataDto;
 import com.kachalova.streamprocessing.dto.OriginalDataDto;
-import com.kachalova.streamprocessing.model.FieldRule;
-import com.kachalova.streamprocessing.model.RuleSet;
+import com.kachalova.streamprocessing.entity.FieldRule;
+import com.kachalova.streamprocessing.entity.RuleSet;
 import com.kachalova.streamprocessing.repository.FieldRuleRepository;
 import com.kachalova.streamprocessing.repository.RuleSetRepository;
 import com.kachalova.streamprocessing.service.AnonymizationEngine;
 import com.kachalova.streamprocessing.service.DataStorageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;

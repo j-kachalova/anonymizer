@@ -1,4 +1,4 @@
-package com.kachalova.streamprocessing.model;
+package com.kachalova.streamprocessing.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -7,15 +7,17 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;
 
+import java.time.LocalDateTime;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table("decomposition_contact")
-public class DecomposedContact {
+@Table("decomposition_meta")
+public class DecomposedMeta {
     @Id
     private Long id;
-    private String phoneNumber;
-    private String email;
+    private Long ruleSetId;
+    private LocalDateTime createdAt;
 }
 

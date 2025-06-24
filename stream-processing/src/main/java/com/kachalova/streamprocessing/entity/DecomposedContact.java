@@ -1,4 +1,4 @@
-package com.kachalova.streamprocessing.model;
+package com.kachalova.streamprocessing.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,13 +11,11 @@ import org.springframework.data.relational.core.mapping.Table;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table("decomposition_identity")
-public class DecomposedIdentity {
+@Table("decomposition_contact")
+public class DecomposedContact {
     @Id
     private Long id;
-    private String lastName;
-    private String firstName;
-    private String patronymic;
-    private String gender;
+    private String phoneNumber;
+    private String email;
 }
 

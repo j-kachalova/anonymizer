@@ -1,7 +1,7 @@
 
 package com.kachalova.streamprocessing.repository;
 
-import com.kachalova.streamprocessing.model.FieldRule;
+import com.kachalova.streamprocessing.entity.FieldRule;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;

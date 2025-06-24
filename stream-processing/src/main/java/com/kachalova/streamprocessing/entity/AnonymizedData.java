@@ -1,5 +1,5 @@
 
-package com.kachalova.streamprocessing.model;
+package com.kachalova.streamprocessing.entity;
 
 import lombok.Data;
 import org.springframework.data.annotation.Id;

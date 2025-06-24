@@ -1,7 +1,7 @@
 package com.kachalova.streamprocessing.mapper;
 
 import com.kachalova.streamprocessing.dto.OriginalDataDto;
-import com.kachalova.streamprocessing.model.OriginalData;
+import com.kachalova.streamprocessing.entity.OriginalData;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 

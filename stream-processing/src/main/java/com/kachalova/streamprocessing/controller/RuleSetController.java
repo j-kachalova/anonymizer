@@ -1,13 +1,11 @@
 package com.kachalova.streamprocessing.controller;
 
 import com.kachalova.streamprocessing.dto.RuleSetRequestDto;
-import com.kachalova.streamprocessing.dto.FieldRuleDto;
-import com.kachalova.streamprocessing.model.RuleSet;
-import com.kachalova.streamprocessing.model.FieldRule;
+import com.kachalova.streamprocessing.entity.RuleSet;
+import com.kachalova.streamprocessing.entity.FieldRule;
 import com.kachalova.streamprocessing.repository.RuleSetRepository;
 import com.kachalova.streamprocessing.repository.FieldRuleRepository;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;

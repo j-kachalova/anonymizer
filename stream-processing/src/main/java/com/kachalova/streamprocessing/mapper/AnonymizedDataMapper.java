@@ -1,7 +1,7 @@
 package com.kachalova.streamprocessing.mapper;
 
 import com.kachalova.streamprocessing.dto.AnonymizedDataDto;
-import com.kachalova.streamprocessing.model.AnonymizedData;
+import com.kachalova.streamprocessing.entity.AnonymizedData;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 

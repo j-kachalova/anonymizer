@@ -1,9 +1,9 @@
 package com.kachalova.streamprocessing.service.strategy;
 
 import com.kachalova.streamprocessing.dto.OriginalDataDto;
-import com.kachalova.streamprocessing.model.DecomposedContact;
-import com.kachalova.streamprocessing.model.DecomposedIdentity;
-import com.kachalova.streamprocessing.model.DecomposedMeta;
+import com.kachalova.streamprocessing.entity.DecomposedContact;
+import com.kachalova.streamprocessing.entity.DecomposedIdentity;
+import com.kachalova.streamprocessing.entity.DecomposedMeta;
 import com.kachalova.streamprocessing.repository.DecomposedContactRepository;
 import com.kachalova.streamprocessing.repository.DecomposedIdentityRepository;
 import com.kachalova.streamprocessing.repository.DecomposedMetaRepository;

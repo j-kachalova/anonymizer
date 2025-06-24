@@ -1,7 +1,7 @@
 
 package com.kachalova.streamprocessing.service.strategy;
 
-import com.kachalova.streamprocessing.model.IdentifierMapping;
+import com.kachalova.streamprocessing.entity.IdentifierMapping;
 import com.kachalova.streamprocessing.repository.IdentifierMappingRepository;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Autowired;

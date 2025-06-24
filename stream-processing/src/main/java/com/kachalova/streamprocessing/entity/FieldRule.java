@@ -1,5 +1,5 @@
 
-package com.kachalova.streamprocessing.model;
+package com.kachalova.streamprocessing.entity;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;

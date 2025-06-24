@@ -1,7 +1,7 @@
 
 package com.kachalova.streamprocessing.repository;
 
-import com.kachalova.streamprocessing.model.AnonymizedData;
+import com.kachalova.streamprocessing.entity.AnonymizedData;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import org.springframework.stereotype.Repository;
 

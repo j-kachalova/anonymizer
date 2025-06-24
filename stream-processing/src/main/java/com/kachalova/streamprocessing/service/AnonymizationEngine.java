@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kachalova.streamprocessing.dto.AnonymizedDataDto;
 import com.kachalova.streamprocessing.dto.OriginalDataDto;
 import com.kachalova.streamprocessing.mapper.AnonymizedDataMapper;
-import com.kachalova.streamprocessing.model.FieldRule;
+import com.kachalova.streamprocessing.entity.FieldRule;
 import com.kachalova.streamprocessing.service.strategy.AnonymizationStrategy;
 import com.kachalova.streamprocessing.service.strategy.StrategyFactory;
 import org.springframework.beans.factory.annotation.Autowired;

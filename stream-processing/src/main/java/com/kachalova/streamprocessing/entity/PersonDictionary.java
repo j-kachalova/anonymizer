@@ -1,28 +1,28 @@
-
-package com.kachalova.streamprocessing.model;
+package com.kachalova.streamprocessing.entity;
 
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;
 import org.springframework.data.relational.core.mapping.Column;
 
-import java.time.LocalDateTime;
-
+@Table("person_dictionary")
 @Data
-@Table("original_data")
-public class OriginalData {
-
+public class PersonDictionary {
     @Id
     private Long id;
+
     @Column("last_name")
     private String lastName;
+
     @Column("first_name")
     private String firstName;
+
+    @Column("patronymic")
     private String patronymic;
+
+    @Column("gender")
     private String gender;
-    @Column("phone_number")
-    private String phoneNumber;
-    private String email;
-    @Column("created_at")
-    private LocalDateTime createdAt = LocalDateTime.now();
+
+    // геттеры и сеттеры
 }
+

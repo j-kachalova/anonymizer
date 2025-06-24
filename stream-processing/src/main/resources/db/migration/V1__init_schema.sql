@@ -102,8 +102,6 @@ CREATE TABLE decomposition_meta (
 -- Индексы (для ускорения поиска)
 CREATE INDEX idx_identifier_mapping_field ON identifier_mapping(field_name);
 CREATE INDEX idx_shuffle_history_field ON shuffle_history(field_name);
-CREATE INDEX idx_decomposition_mapping_field ON decomposition_mapping(field_name);
 CREATE INDEX idx_anonymized_data_rule_set_id ON anonymized_data(rule_set_id);
-CREATE INDEX idx_original_data_rule_set_id ON original_data(rule_set_id);
 CREATE INDEX idx_anonymized_data_email ON anonymized_data(email);
 CREATE INDEX idx_original_data_phone_number ON original_data(phone_number);
